@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dossier PAG-31095 — Square Mirabel</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#E31837;--red-dark:#b5122b;--red-bg:#fdf0f2;
+  --blue:#003DA5;--blue-dark:#002d7a;--blue-bg:#eef3fc;
+  --white:#ffffff;--off-white:#f7f8fa;--gray-50:#f3f4f6;
+  --gray-100:#e5e7eb;--gray-300:#9ca3af;--gray-500:#6b7280;
+  --gray-700:#374151;--navy:#111827;
+  --green:#15803d;--green-bg:#f0fdf4;
+  --amber:#b45309;--amber-bg:#fffbeb;
+  --r:10px;--rs:6px;--font:'Segoe UI',system-ui,-apple-system,sans-serif;
+}
+html,body{height:100%;font-family:var(--font);background:var(--off-white);color:var(--gray-700);font-size:14px;line-height:1.5}
+
+/* OVERLAY */
+#overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:999}
+.id-box{background:var(--white);border-radius:16px;padding:2rem;max-width:380px;width:93%;box-shadow:0 24px 64px rgba(0,0,0,.35)}
+.id-logo{display:flex;align-items:center;gap:10px;margin-bottom:1.25rem}
+.id-logo-mark{width:36px;height:36px;background:var(--red);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.id-logo-mark span{color:white;font-weight:900;font-size:15px;letter-spacing:-.5px}
+.id-logo-text strong{display:block;font-size:13px;font-weight:700;color:var(--navy)}
+.id-logo-text span{font-size:11px;color:var(--gray-500)}
+.id-title{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:.25rem}
+.id-sub{font-size:13px;color:var(--gray-500);margin-bottom:1.5rem}
+.id-btn{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;margin-bottom:10px;border:1.5px solid var(--gray-100);border-radius:var(--r);background:var(--white);cursor:pointer;text-align:left;transition:all .15s}
+.id-btn:hover{border-color:var(--red);background:#fffafb}
+.id-av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+.id-av.s{background:var(--red);color:white}
+.id-av.g{background:var(--blue);color:white}
+.id-info strong{display:block;font-size:14px;font-weight:600;color:var(--navy)}
+.id-info span{font-size:12px;color:var(--gray-500)}
+
+/* LAYOUT */
+.app{display:flex;flex-direction:column;min-height:100vh;max-width:920px;margin:0 auto}
+
+/* HEADER */
+.hdr{background:var(--blue);padding:.85rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0}
+.hdr-brand{display:flex;align-items:center;gap:10px}
+.hdr-mark{width:32px;height:32px;background:var(--red);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hdr-mark span{color:white;font-weight:900;font-size:13px}
+.hdr-info .badge{font-size:10px;font-weight:700;letter-spacing:.08em;color:rgba(255,255,255,.6);text-transform:uppercase}
+.hdr-info .title{font-size:14px;font-weight:700;color:white;margin-top:1px}
+.hdr-info .sub{font-size:11px;color:rgba(255,255,255,.5)}
+.me-pill{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.12);border-radius:20px;padding:5px 12px;cursor:pointer;border:none;color:white;font-size:12px;font-family:var(--font);transition:background .15s;white-space:nowrap}
+.me-pill:hover{background:rgba(255,255,255,.2)}
+.me-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;flex-shrink:0}
+
+/* ALERTS */
+#alerts-bar{flex-shrink:0}
+.alert-item{display:flex;align-items:center;gap:8px;padding:8px 1.25rem;font-size:12px;font-weight:600;border-bottom:1px solid rgba(0,0,0,.06)}
+.alert-item.urgent{background:var(--red);color:white}
+.alert-item.warn{background:var(--amber-bg);color:var(--amber)}
+
+/* TABS */
+.tabs{display:flex;background:var(--white);border-bottom:2px solid var(--gray-100);padding:0 1rem;flex-shrink:0;overflow-x:auto}
+.tab{padding:11px 14px;font-size:13px;cursor:pointer;border:none;background:none;color:var(--gray-500);border-bottom:3px solid transparent;margin-bottom:-2px;font-weight:500;white-space:nowrap;transition:all .15s;display:flex;align-items:center;gap:6px;font-family:var(--font)}
+.tab:hover{color:var(--navy)}
+.tab.on{color:var(--red);border-bottom-color:var(--red);font-weight:600}
+.unread{background:var(--red);color:white;font-size:10px;padding:1px 6px;border-radius:20px;font-weight:700}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;padding:1rem 1.25rem 3rem;background:var(--off-white)}
+.panel{display:none}.panel.on{display:block}
+
+/* KPI */
+.kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem}
+.kpi{background:var(--white);border-radius:var(--r);padding:1rem;border:1px solid var(--gray-100)}
+.kpi .lbl{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-500);font-weight:700;margin-bottom:4px}
+.kpi .val{font-size:22px;font-weight:800;color:var(--blue)}
+.kpi .sub{font-size:11px;color:var(--gray-500);margin-top:2px}
+.kpi.urgent .val{color:var(--red)}
+
+/* PROGRESS */
+.prog-card{background:var(--white);border-radius:var(--r);padding:1rem;border:1px solid var(--gray-100);margin-bottom:1rem}
+.prog-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;color:var(--gray-500)}
+.prog-row strong{color:var(--navy)}
+.prog-bg{background:var(--gray-100);border-radius:20px;height:7px;margin-bottom:10px;overflow:hidden}
+.prog-fill{height:7px;border-radius:20px;background:linear-gradient(90deg,var(--blue),var(--red));transition:width .5s}
+
+/* SECTIONS */
+.sec{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--gray-500);padding:7px 10px;background:var(--gray-50);border-radius:var(--rs);margin:1rem 0 .5rem;border-left:3px solid var(--red)}
+
+/* ÉCHÉANCIER */
+.ech-item{background:var(--white);border:1px solid var(--gray-100);border-radius:var(--r);padding:.85rem 1rem;margin-bottom:6px;display:flex;align-items:flex-start;gap:10px;transition:box-shadow .15s}
+.ech-item:hover{box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.ech-n{font-size:11px;font-weight:700;color:var(--gray-300);min-width:22px;padding-top:2px}
+.ech-body{flex:1;min-width:0}
+.ech-title{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:2px}
+.ech-meta{font-size:11px;color:var(--gray-500);margin-bottom:3px}
+.ech-docs{font-size:11px;color:var(--gray-500);line-height:1.5}
+.ech-stamp{font-size:10px;font-style:italic;margin-top:4px}
+.ech-stamp.done{color:var(--green)}.ech-stamp.prog{color:var(--amber)}
+.ech-ctrl{display:flex;flex-direction:column;gap:3px;flex-shrink:0}
+.sbtn{font-size:10px;padding:4px 9px;border-radius:20px;border:1px solid var(--gray-100);cursor:pointer;background:var(--white);color:var(--gray-500);white-space:nowrap;transition:all .12s;font-family:var(--font)}
+.sbtn:hover{background:var(--gray-50)}
+.sbtn.s-af{color:var(--gray-500);border-color:var(--gray-200)}
+.sbtn.s-ec{background:var(--amber-bg);color:var(--amber);border-color:#fcd34d;font-weight:600}
+.sbtn.s-co{background:var(--green-bg);color:var(--green);border-color:#86efac;font-weight:600}
+
+/* CHECKLIST */
+.chk-item{background:var(--white);border:1px solid var(--gray-100);border-radius:var(--r);padding:.75rem 1rem;margin-bottom:5px;display:flex;align-items:flex-start;gap:10px}
+.chk-body{flex:1;min-width:0}
+.chk-name{font-size:13px;font-weight:500;color:var(--navy);margin-bottom:2px}
+.chk-meta{font-size:11px;color:var(--gray-500);line-height:1.4}
+.chk-stamp{font-size:10px;color:var(--green);font-style:italic;margin-top:3px}
+.chk-ctrl{display:flex;gap:4px;flex-shrink:0;padding-top:2px}
+.cbtn{font-size:10px;padding:4px 9px;border-radius:20px;border:1px solid var(--gray-100);cursor:pointer;background:var(--white);color:var(--gray-500);white-space:nowrap;transition:all .12s;font-family:var(--font)}
+.cbtn:hover{background:var(--gray-50)}
+.cbtn.on{background:var(--green-bg);color:var(--green);border-color:#86efac;font-weight:600}
+.stat{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;flex-shrink:0;align-self:flex-start;margin-top:2px}
+.st-em{background:var(--green-bg);color:var(--green)}
+.st-ao{background:var(--red-bg);color:var(--red)}
+.st-av{background:var(--blue-bg);color:var(--blue)}
+.st-aa{background:var(--amber-bg);color:var(--amber)}
+.st-ap{background:#f5e6fb;color:#6a1a8b}
+.st-ac{background:#e6f5fb;color:#0c6b8b}
+
+/* DOCUMENTS */
+.add-row{display:flex;gap:8px;margin-bottom:1rem}
+.add-row input{flex:1;height:40px;padding:0 12px;border:1.5px solid var(--gray-100);border-radius:var(--rs);background:var(--white);color:var(--navy);font-size:13px;font-family:var(--font);transition:border-color .15s}
+.add-row input:focus{outline:none;border-color:var(--blue)}
+.btn{height:40px;padding:0 16px;border:1.5px solid var(--gray-100);border-radius:var(--rs);background:var(--white);cursor:pointer;color:var(--gray-700);font-size:13px;font-family:var(--font);font-weight:500;transition:all .12s}
+.btn:hover{background:var(--gray-50)}
+.btn-primary{background:var(--red);color:white;border-color:var(--red)}
+.btn-primary:hover{background:var(--red-dark);border-color:var(--red-dark)}
+.doc-item{background:var(--white);border:1px solid var(--gray-100);border-radius:var(--r);padding:.75rem 1rem;margin-bottom:5px;display:flex;align-items:flex-start;gap:8px;transition:all .12s}
+.doc-item:hover{border-color:var(--gray-300)}
+.doc-item.rcv{opacity:.55}
+.doc-name{flex:1;font-size:13px;color:var(--navy)}
+.doc-item.rcv .doc-name{text-decoration:line-through;color:var(--gray-500)}
+.doc-stamp{font-size:10px;color:var(--green);font-style:italic;margin-top:2px}
+.cbox{width:20px;height:20px;border-radius:50%;border:2px solid var(--gray-300);background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:10px;color:transparent;transition:all .12s}
+.cbox:hover{border-color:var(--green)}
+.cbox.on{background:var(--green);border-color:var(--green);color:white}
+.xbtn{background:none;border:none;cursor:pointer;font-size:16px;color:var(--gray-300);padding:0 2px;line-height:1;flex-shrink:0;transition:color .12s}
+.xbtn:hover{color:var(--red)}
+.divider{border:none;border-top:1px solid var(--gray-100);margin:.75rem 0}
+
+/* MESSAGES */
+.msg-list{display:flex;flex-direction:column;gap:10px;margin-bottom:1rem;min-height:280px;padding-bottom:.5rem}
+.msg-empty{text-align:center;color:var(--gray-300);font-size:13px;padding:3rem 0}
+.bubble{max-width:78%}
+.bubble.mine{align-self:flex-end}
+.bubble.theirs{align-self:flex-start}
+.bubble .meta{font-size:10px;color:var(--gray-500);margin-bottom:3px}
+.bubble.mine .meta{text-align:right}
+.bubble .txt{padding:.7rem .95rem;border-radius:16px;font-size:13px;line-height:1.55}
+.bubble.mine .txt{background:var(--blue);color:white;border-bottom-right-radius:4px}
+.bubble.theirs .txt{background:var(--white);color:var(--navy);border:1px solid var(--gray-100);border-bottom-left-radius:4px}
+.msg-form{display:flex;gap:8px;background:var(--white);border:1.5px solid var(--gray-100);border-radius:var(--r);padding:8px;transition:border-color .15s}
+.msg-form:focus-within{border-color:var(--blue)}
+.msg-form textarea{flex:1;border:none;background:none;resize:none;font-size:13px;font-family:var(--font);color:var(--navy);outline:none;min-height:40px;max-height:100px}
+.send-btn{width:40px;height:40px;border-radius:50%;background:var(--red);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .12s}
+.send-btn:hover{background:var(--red-dark)}
+.send-btn svg{width:16px;height:16px;fill:white}
+
+/* MISC */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.contact-card{background:var(--white);border:1px solid var(--gray-100);border-radius:var(--r);padding:.75rem 1rem}
+.contact-card .lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-500);margin-bottom:3px}
+.contact-card .name{font-size:13px;font-weight:600;color:var(--navy)}
+.refresh-row{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--gray-500);margin-bottom:.75rem}
+.rbtn{font-size:11px;padding:3px 10px;border:1px solid var(--gray-100);border-radius:20px;background:var(--white);cursor:pointer;color:var(--gray-500);font-family:var(--font)}
+.rbtn:hover{background:var(--gray-50)}
+.next-item{background:var(--white);border-left:4px solid var(--red);border-radius:var(--rs);padding:.75rem 1rem;margin-bottom:6px;border-top:1px solid var(--gray-100);border-right:1px solid var(--gray-100);border-bottom:1px solid var(--gray-100)}
+.next-item .ni-title{font-size:13px;font-weight:600;color:var(--navy)}
+.next-item .ni-date{font-size:11px;color:var(--red);margin-top:2px;font-weight:600}
+
+@media(max-width:580px){
+  .kgrid{grid-template-columns:1fr 1fr}
+  .contact-grid{grid-template-columns:1fr}
+  .hdr-info .sub{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- OVERLAY -->
+<div id="overlay">
+  <div class="id-box">
+    <div class="id-logo">
+      <div class="id-logo-mark"><span>R</span></div>
+      <div class="id-logo-text">
+        <strong>Stéphane Darveau</strong>
+        <span>Courtier immobilier</span>
+      </div>
+    </div>
+    <div class="id-title">Dossier PAG-31095</div>
+    <div class="id-sub">Fraction F — Square Mirabel, Mirabel<br>Identifiez-vous pour accéder au dossier.</div>
+    <button class="id-btn" onclick="setMe('Stéphane Darveau','SD','s')">
+      <div class="id-av s">SD</div>
+      <div class="id-info"><strong>Stéphane Darveau</strong><span>Courtier immobilier</span></div>
+    </button>
+    <button class="id-btn" onclick="setMe('Guy Tardif','GT','g')">
+      <div class="id-av g">GT</div>
+      <div class="id-info"><strong>Guy Tardif</strong><span>Acheteur — GTA-Tardif inc.</span></div>
+    </button>
+  </div>
+</div>
+
+<div class="app">
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-brand">
+    <div class="hdr-mark"><span>R</span></div>
+    <div class="hdr-info">
+      <div class="badge">PAG-31095</div>
+      <div class="title">Fraction F — Square Mirabel</div>
+      <div class="sub">GTA-Tardif inc. → 9433-6153 Qc inc.</div>
+    </div>
+  </div>
+  <button class="me-pill" id="me-pill" onclick="changeMe()">
+    <div class="me-dot"></div>
+    <span id="me-name-hdr">···</span>
+  </button>
+</div>
+
+<!-- ALERTS -->
+<div id="alerts-bar"></div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab on" onclick="sw('dash',this)">Tableau de bord</button>
+  <button class="tab" onclick="sw('ech',this)">Échéancier</button>
+  <button class="tab" onclick="sw('chk',this)">Vérification</button>
+  <button class="tab" onclick="sw('docs',this)">Documents</button>
+  <button class="tab" id="tab-msg" onclick="sw('msg',this)">
+    Messages
+    <span class="unread" id="unread" style="display:none">0</span>
+  </button>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- DASHBOARD -->
+  <div id="p-dash" class="panel on">
+    <div class="kgrid">
+      <div class="kpi" id="kpi-vd">
+        <div class="lbl">Vérif. diligente</div>
+        <div class="val" id="kv1">—</div>
+        <div class="sub">13 mai 2026</div>
+      </div>
+      <div class="kpi" id="kpi-cl">
+        <div class="lbl">Clôture</div>
+        <div class="val" id="kv2">—</div>
+        <div class="sub">1er juin 2026</div>
+      </div>
+      <div class="kpi" id="kpi-hy">
+        <div class="lbl">Hypothèque</div>
+        <div class="val" id="kv3">—</div>
+        <div class="sub">28 mai 2026</div>
+      </div>
+    </div>
+    <div class="prog-card">
+      <div class="prog-row"><span id="pl1">Échéancier</span><strong id="pp1">0%</strong></div>
+      <div class="prog-bg"><div class="prog-fill" id="pb1" style="width:0%"></div></div>
+      <div class="prog-row"><span id="pl2">Documents reçus</span><strong id="pp2">0%</strong></div>
+      <div class="prog-bg"><div class="prog-fill" id="pb2" style="width:0%"></div></div>
+    </div>
+    <div class="sec">Prochaines actions</div>
+    <div id="next-steps"></div>
+    <div class="sec" style="margin-top:1.25rem">Parties et contacts</div>
+    <div class="contact-grid">
+      <div class="contact-card"><div class="lbl">Courtier</div><div class="name">Stéphane Darveau</div></div>
+      <div class="contact-card"><div class="lbl">Courtière vendeuse</div><div class="name">Nathalie Théorêt</div></div>
+      <div class="contact-card"><div class="lbl">Notaire</div><div class="name">Me Timothée Vallée</div></div>
+      <div class="contact-card"><div class="lbl">Financement</div><div class="name">Desjardins / SCHL</div></div>
+    </div>
+  </div>
+
+  <!-- ÉCHÉANCIER -->
+  <div id="p-ech" class="panel">
+    <div class="refresh-row">
+      <span id="ech-ts">—</span>
+      <button class="rbtn" onclick="renderEch()">↻</button>
+    </div>
+    <div id="ech-list"></div>
+  </div>
+
+  <!-- VÉRIFICATION DILIGENTE -->
+  <div id="p-chk" class="panel">
+    <div class="refresh-row">
+      <span id="chk-ts">—</span>
+      <button class="rbtn" onclick="renderChk()">↻</button>
+    </div>
+    <div id="chk-list"></div>
+  </div>
+
+  <!-- DOCUMENTS -->
+  <div id="p-docs" class="panel">
+    <div class="add-row">
+      <input type="text" id="new-doc" placeholder="Ajouter un document à obtenir..." />
+      <button class="btn btn-primary" onclick="addDoc()">+ Ajouter</button>
+    </div>
+    <div class="sec" id="sec-pend">En attente</div>
+    <div id="docs-pend"></div>
+    <div class="divider"></div>
+    <div class="sec" id="sec-recv">Reçus</div>
+    <div id="docs-recv"></div>
+  </div>
+
+  <!-- MESSAGES -->
+  <div id="p-msg" class="panel">
+    <div class="refresh-row">
+      <span id="msg-ts">—</span>
+      <button class="rbtn" onclick="loadMsgs()">↻</button>
+    </div>
+    <div class="msg-list" id="msg-list">
+      <div class="msg-empty">Aucun message pour l'instant.</div>
+    </div>
+    <div class="msg-form">
+      <textarea id="msg-input" placeholder="Écrire un message..." rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"></textarea>
+      <button class="send-btn" onclick="sendMsg()">
+        <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+      </button>
+    </div>
+  </div>
+
+</div><!-- /content -->
+</div><!-- /app -->
+
+<script>
+// ========== CONFIG ==========
+// Remplacez ces deux valeurs par celles de votre projet Supabase
+// (gratuit sur supabase.com — prend 5 minutes)
+const SB_URL = '';
+const SB_KEY = '';
+const USE_SB = SB_URL && SB_KEY && SB_URL !== '';
+
+// ========== ÉTAT ==========
+let ME = null;
+let echSt = {}, chkSt = {}, docs = [], msgs = [], lastMsgId = 0;
+
+// ========== DONNÉES ÉCHÉANCIER ==========
+const ECH = [
+  {ph:'IMMÉDIAT (0–5 jours)',items:[
+    {id:'e1',n:1,title:"Accepter la contre-proposition CP-17654",date:"29 mars 2026",clause:"P2.7",docs:"Signature du répondant sur CP-17654"},
+    {id:'e2',n:2,title:"Déposer demande d'assumation d'hypothèque — Desjardins",date:"30 mars 2026",clause:"Annexe F / F2.3.1",docs:"États financiers GTA-Tardif inc. · Bilan personnel Guy Tardif · Preuve mise de fonds"},
+    {id:'e3',n:3,title:"Fournir preuve de disponibilité des fonds (1 245 000 $)",date:"3 avril 2026",clause:"Annexe F / F2.1",docs:"Relevé bancaire ou lettre de l'institution financière"},
+  ]},
+  {ph:'INSPECTION (15 jours)',items:[
+    {id:'e4',n:4,title:"Inspection de l'immeuble par un inspecteur en bâtiment",date:"13 avril 2026",clause:"PA 8.1",docs:"Rapport d'inspection · Avis écrit si insatisfait (4 jours après rapport)"},
+  ]},
+  {ph:'VÉRIFICATION DILIGENTE (45 jours)',items:[
+    {id:'e5',n:5,title:"Vérification diligente complète",date:"13 mai 2026",clause:"Annexe / Clause 1",docs:"Baux · Revenus/dépenses 3 ans · Taxes · Contrats · Avis gouvernementaux"},
+    {id:'e6',n:6,title:"Documents de copropriété",date:"13 mai 2026",clause:"Annexe / Clauses 4-5",docs:"Déclaration copropriété + modif. · Règlement · PV (3 ans) · Étude fonds prévoyance · ÉF syndicat"},
+    {id:'e7',n:7,title:"Nouvelle déclaration du vendeur (copropriété divise)",date:"13 mai 2026",clause:"Annexe / Clause 8",docs:"Formulaire DV copropriété divise (Nathalie Théorêt)"},
+    {id:'e8',n:8,title:"Documents terrassement et asphaltage",date:"13 mai 2026",clause:"Annexe / Clause 10 (modifiée CP)",docs:"Contrats entrepreneurs · Soumissions · Coûts détaillés"},
+    {id:'e9',n:9,title:"Avis RBQ — escaliers toit-terrasse et balustrades",date:"13 mai 2026",clause:"Annexe / Clause 11",docs:"Copies avis RBQ · Preuve travaux correctifs · Attestations de conformité"},
+    {id:'e10',n:10,title:"Litige UDEV — état complet",date:"13 mai 2026",clause:"Annexe / Clause 12",docs:"État litige + montants · Hypothèques légales · Offres de règlement"},
+    {id:'e11',n:11,title:"Cotisations spéciales — état détaillé",date:"13 mai 2026",clause:"Annexe / Clause 13",docs:"Liste cotisations votées · Montants, échéances, état paiements"},
+    {id:'e12',n:12,title:"Gouvernance syndicat — dettes et contrats",date:"13 mai 2026",clause:"Annexe / Clause 14 (modifiée CP)",docs:"Sommes dues · Poursuites · Contrats entreprises liées aux admin."},
+    {id:'e13',n:13,title:"Plan attribution stationnements (29 espaces)",date:"13 mai 2026",clause:"Annexe / Clause 6",docs:"Plan numérotation · Fraction F : 10 ext. + 19 int."},
+  ]},
+  {ph:'CONSENTEMENT HYPOTHÉCAIRE (60 jours)',items:[
+    {id:'e14',n:14,title:"Consentement Desjardins / SCHL pour l'assumation",date:"28 mai 2026",clause:"Annexe F / F2.3.2 (modifiée CP)",docs:"Lettre consentement Desjardins · Approbation SCHL · Libération vendeur"},
+  ]},
+  {ph:'CLÔTURE',items:[
+    {id:'e15',n:15,title:"Vendeur acquitte toutes dettes envers le syndicat",date:"Avant l'acte",clause:"CP clause 14",docs:"Quittance complète du syndicat"},
+    {id:'e16',n:16,title:"Signature de l'acte de vente — Me Timothée Vallée",date:"1er juin 2026",clause:"PA 11.1 (modifiée CP)",docs:"Acte de vente notarié · Retenue fidéicommis terrassement"},
+  ]},
+  {ph:'FILET DE SÉCURITÉ (Clause 9)',items:[
+    {id:'e17',n:17,title:"Report automatique si consentement non obtenu à temps",date:"Jusqu'au 31 juillet 2026",clause:"Annexe / Clause 9",docs:"Preuve de diligence raisonnable (pénalité 100 000$ suspendue)"},
+  ]},
+  {ph:'APRÈS CLÔTURE',items:[
+    {id:'e18',n:18,title:"Complétion travaux terrassement et asphaltage (vendeur)",date:"Délai raisonnable post-acte",clause:"CP clause 10",docs:"Suivi notaire · Fonds fidéicommis · Factures entrepreneurs"},
+  ]},
+];
+
+// ========== DONNÉES CHECKLIST ==========
+const CHK = [
+  {cat:'JURIDIQUE',items:[
+    {id:'c1',name:"Déclaration de copropriété",st:'En main',act:'—',resp:'—',note:'Version 2021'},
+    {id:'c2',name:"Modification déclaration copropriété (nov. 2025)",st:'En main',act:'—',resp:'—',note:'Version 2025'},
+    {id:'c3',name:"Règlement de l'immeuble",st:'En main',act:'—',resp:'—',note:''},
+    {id:'c4',name:"Certificat de localisation",st:'À vérifier',act:'Vérifier si à jour (< 10 ans)',resp:'Notaire',note:''},
+    {id:'c5',name:"Hypothèque — solde et conditions",st:'En main',act:'Vérifier solde',resp:'Notaire',note:''},
+    {id:'c6',name:"Attestation syndicat (art. 1069 C.c.Q.)",st:'À obtenir',act:'Demander à la courtière',resp:'Courtière',note:'PRIORITAIRE'},
+    {id:'c7',name:"Registre foncier — titre de propriété",st:'À vérifier',act:'Vérifier charges et servitudes',resp:'Notaire',note:''},
+    {id:'c8',name:"Conformité zonage municipal",st:'À vérifier',act:'Confirmer usage conforme',resp:'Notaire / Ville',note:''},
+  ]},
+  {cat:'FINANCIER',items:[
+    {id:'c9',name:"Budget réel syndicat 2023-2024",st:'En main',act:'Analyser les écarts',resp:'Stéphane',note:''},
+    {id:'c10',name:"Budget réel syndicat 2024-2025",st:'En main',act:'Analyser les écarts',resp:'Stéphane',note:''},
+    {id:'c11',name:"Budget prévisionnel 2025-2026",st:'En main',act:'Comparer avec les réels',resp:'Stéphane',note:''},
+    {id:'c12',name:"États financiers vérifiés (2-3 ans)",st:'À obtenir',act:'Demander à la courtière',resp:'Courtière',note:'PRIORITAIRE'},
+    {id:'c13',name:"Étude du fonds de prévoyance (Loi 16)",st:'À obtenir',act:'Demander à la courtière',resp:'Courtière',note:'PRIORITAIRE'},
+    {id:'c14',name:"Cotisations spéciales (passées/prévues)",st:'À obtenir',act:'Demander historique et projections',resp:'Courtière',note:'Risque financier important'},
+    {id:'c15',name:"Arrérages de charges communes",st:'À obtenir',act:'Vérifier si vendeur est à jour',resp:'Courtière',note:'Via attestation 1069'},
+  ]},
+  {cat:'TAXES',items:[
+    {id:'c16',name:"Taxe municipale 2025",st:'En main',act:'Vérifier si payée par vendeur',resp:'Notaire',note:''},
+    {id:'c17',name:"Taxe scolaire 2025-2026",st:'En main',act:'Vérifier si payée par vendeur',resp:'Notaire',note:''},
+    {id:'c18',name:"Taxe de bienvenue",st:'À calculer',act:'Estimer le montant',resp:'Notaire / Stéphane',note:'À prévoir au closing'},
+  ]},
+  {cat:'ASSURANCES',items:[
+    {id:'c19',name:"Police d'assurance du syndicat",st:'À obtenir',act:'Demander couvertures et franchise',resp:'Courtière',note:'PRIORITAIRE'},
+    {id:'c20',name:"Historique des réclamations",st:'À obtenir',act:'Demander au syndicat',resp:'Courtière',note:'Dégâts eau, incendies…'},
+  ]},
+  {cat:'LOCATAIRES / BAUX',items:[
+    {id:'c21',name:"Baux en vigueur (15 logements, fraction F)",st:'À obtenir',act:'Demander copies complètes',resp:'Courtière',note:'PRIORITAIRE'},
+    {id:'c22',name:"Registre des loyers / historique",st:'À obtenir',act:'Vérifier les augmentations',resp:'Courtière',note:'Conformité TAL'},
+    {id:'c23',name:"Taux d'occupation",st:'À vérifier',act:'Confirmer unités vacantes',resp:'Courtière',note:''},
+    {id:'c24',name:"Revenus de location actuels vs marché",st:'À analyser',act:'Comparer avec comparables',resp:'Stéphane',note:''},
+  ]},
+  {cat:'INSPECTION / BÂTIMENT',items:[
+    {id:'c25',name:"Rapport d'inspection préachat",st:'À obtenir',act:'Mandater un inspecteur',resp:'Stéphane',note:'PRIORITAIRE'},
+    {id:'c26',name:"Carnet d'entretien (Loi 16)",st:'À obtenir',act:'Demander à la courtière',resp:'Courtière',note:'Obligatoire Loi 16'},
+    {id:'c27',name:"Avis de non-conformité (Ville)",st:'À obtenir',act:'Demander à la courtière',resp:'Courtière',note:''},
+    {id:'c28',name:"Travaux majeurs complétés ou prévus",st:'À obtenir',act:'Vérifier dans PV et syndicat',resp:'Stéphane',note:''},
+  ]},
+  {cat:'PROCÈS-VERBAUX',items:[
+    {id:'c29',name:"PV complets sept. 2023 – sept. 2025 (20 PV)",st:'En main',act:'Analysés',resp:'Stéphane',note:'FAIT'},
+    {id:'c30',name:"PVs manquants août–déc. 2024",st:'À obtenir',act:'Demander via courriel envoyé',resp:'Courtière',note:'Courriel envoyé'},
+    {id:'c31',name:"PVs manquants avr.–août 2025",st:'À obtenir',act:'Demander via courriel envoyé',resp:'Courtière',note:'Courriel envoyé'},
+    {id:'c32',name:"Statut PIIA – Ville de Mirabel",st:'À obtenir',act:'Réponse attendue',resp:'Courtière',note:'Urbaniste Vert-Demain'},
+    {id:'c33',name:"Statut préavis d'exercice lots 6 373 562 et 6 378 241",st:'À obtenir',act:'Réponse attendue',resp:'Courtière',note:''},
+    {id:'c34',name:"Statut règlement UDEV + radiation hypothèque légale",st:'À obtenir',act:'Réponse attendue',resp:'Courtière',note:''},
+  ]},
+];
+
+// ========== DOCUMENTS PAR DÉFAUT ==========
+const DEF_DOCS = [
+  "PVs manquants août–déc. 2024",
+  "PVs manquants avr.–août 2025",
+  "Statut PIIA – Ville de Mirabel",
+  "Statut préavis d'exercice lots 6 373 562 et 6 378 241",
+  "Statut règlement UDEV + radiation hypothèque légale",
+  "Formulaire DV copropriété divise (Nathalie Théorêt)",
+  "Modification déclaration copropriété nov. 2025",
+  "Étude du fonds de prévoyance","États financiers syndicat 2023-2024",
+  "Budget syndicat 2024-2025","État cotisations spéciales – Fraction F",
+  "Quittance syndicat (vendeur + Dagher)",
+  "2 soumissions travaux terrassement/asphaltage",
+  "Attestations de conformité RBQ",
+  "Contrats syndicat → Construction Ri-Mar",
+  "Baux en vigueur (15 logements)","Police d'assurance syndicat",
+  "Plan attribution stationnements (29 espaces)","Carnet d'entretien (Loi 16)",
+  "Rapport d'inspection préachat",
+];
+
+// ========== UTILITAIRES ==========
+const KEY = k => 'pag31095_'+k;
+function save(k,v){try{localStorage.setItem(KEY(k),JSON.stringify(v));}catch(e){}}
+function load(k,def){try{const v=localStorage.getItem(KEY(k));return v?JSON.parse(v):def;}catch(e){return def;}}
+function now(){return new Date().toISOString();}
+function fmt(iso){if(!iso)return'';const d=new Date(iso);return d.toLocaleDateString('fr-CA',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});}
+function daysLeft(dateStr){
+  const t=new Date(dateStr).getTime()-Date.now();
+  return Math.ceil(t/86400000);
+}
+function stClass(s){return{' En main':'st-em','À obtenir':'st-ao','À vérifier':'st-av','À analyser':'st-aa','À prévoir':'st-ap','À calculer':'st-ac'}[s]||'st-av';}
+
+// ========== IDENTITÉ ==========
+function setMe(name,initials,type){
+  ME={name,initials,type};
+  save('me',ME);
+  document.getElementById('me-name-hdr').textContent=name;
+  document.getElementById('overlay').style.display='none';
+  init();
+}
+function changeMe(){
+  if(confirm('Changer d\'identité ?')){
+    ME=null;save('me',null);
+    document.getElementById('overlay').style.display='flex';
+  }
+}
+
+// ========== INITIALISATION ==========
+function init(){
+  echSt=load('ech',{});
+  chkSt=load('chk',{});
+  docs=load('docs',DEF_DOCS.map((n,i)=>({id:'d'+i,name:n,recv:null})));
+  msgs=load('msgs',[]);
+  renderAlerts();
+  renderDash();
+  renderEch();
+  renderChk();
+  renderDocs();
+  renderMsgs();
+  setInterval(()=>{renderAlerts();renderDash();},60000);
+}
+
+// ========== ALERTES ==========
+function renderAlerts(){
+  const bar=document.getElementById('alerts-bar');
+  const alerts=[];
+  const vd=daysLeft('2026-05-13');
+  const hy=daysLeft('2026-05-28');
+  const cl=daysLeft('2026-06-01');
+  if(vd<=7&&vd>0) alerts.push({type:'urgent',msg:`⚠ Vérification diligente : ${vd} jour${vd>1?'s':''} restant${vd>1?'s':''} (13 mai 2026)`});
+  else if(vd<=21&&vd>0) alerts.push({type:'warn',msg:`⏰ Vérification diligente dans ${vd} jours`});
+  if(hy<=14&&hy>0) alerts.push({type:'urgent',msg:`⚠ Consentement hypothécaire : ${hy} jours restants`});
+  if(cl<=14&&cl>0) alerts.push({type:'urgent',msg:`⚠ Clôture dans ${cl} jours — 1er juin 2026`});
+  bar.innerHTML=alerts.map(a=>`<div class="alert-item ${a.type}">${a.msg}</div>`).join('');
+  bar.style.display=alerts.length?'block':'none';
+}
+
+// ========== DASHBOARD ==========
+function renderDash(){
+  const vd=daysLeft('2026-05-13');
+  const cl=daysLeft('2026-06-01');
+  const hy=daysLeft('2026-05-28');
+  document.getElementById('kv1').textContent=vd>0?vd+'j':'Expiré';
+  document.getElementById('kv2').textContent=cl>0?cl+'j':'Expiré';
+  document.getElementById('kv3').textContent=hy>0?hy+'j':'Expiré';
+  document.getElementById('kpi-vd').className='kpi'+(vd<=21?' urgent':'');
+  const echAll=ECH.flatMap(p=>p.items);
+  const echDone=echAll.filter(i=>(echSt[i.id]||{}).s==='Complété').length;
+  const ep=Math.round(echDone/echAll.length*100);
+  document.getElementById('pl1').textContent=`Échéancier (${echDone}/${echAll.length})`;
+  document.getElementById('pp1').textContent=ep+'%';
+  document.getElementById('pb1').style.width=ep+'%';
+  const dr=docs.filter(x=>x.recv).length;
+  const dp=docs.length?Math.round(dr/docs.length*100):0;
+  document.getElementById('pl2').textContent=`Documents (${dr}/${docs.length})`;
+  document.getElementById('pp2').textContent=dp+'%';
+  document.getElementById('pb2').style.width=dp+'%';
+  // Prochaines actions
+  const ns=document.getElementById('next-steps');
+  const pending=echAll.filter(i=>{const s=(echSt[i.id]||{}).s||'À faire';return s!=='Complété';}).slice(0,3);
+  ns.innerHTML=pending.map(i=>`<div class="next-item"><div class="ni-title">${i.n}. ${i.title}</div><div class="ni-date">${i.date} · ${i.clause}</div></div>`).join('');
+}
+
+// ========== ÉCHÉANCIER ==========
+function renderEch(){
+  document.getElementById('ech-ts').textContent='Mis à jour : '+fmt(now());
+  const el=document.getElementById('ech-list');el.innerHTML='';
+  ECH.forEach(ph=>{
+    const sh=document.createElement('div');sh.className='sec';sh.textContent=ph.ph;el.appendChild(sh);
+    ph.items.forEach(it=>{
+      const st=(echSt[it.id]||{});
+      const s=st.s||'À faire';
+      const sc=s==='Complété'?'s-co':s==='En cours'?'s-ec':'s-af';
+      const stamp=st.by?`${s==='Complété'?'✓':'⟳'} ${s} par ${st.by} · ${fmt(st.at)}`:'';
+      const d=document.createElement('div');d.className='ech-item';
+      d.innerHTML=`<div class="ech-n">${it.n}</div>
+        <div class="ech-body">
+          <div class="ech-title">${it.title}</div>
+          <div class="ech-meta">${it.clause} · ${it.date}</div>
+          <div class="ech-docs">${it.docs}</div>
+          ${stamp?`<div class="ech-stamp ${s==='Complété'?'done':'prog'}">${stamp}</div>`:''}
+        </div>
+        <div class="ech-ctrl">
+          <button class="sbtn ${s==='À faire'?'s-af':''}" onclick="setEch('${it.id}','À faire')">À faire</button>
+          <button class="sbtn ${s==='En cours'?'s-ec':''}" onclick="setEch('${it.id}','En cours')">En cours</button>
+          <button class="sbtn ${s==='Complété'?'s-co':''}" onclick="setEch('${it.id}','Complété')">✓ Fait</button>
+        </div>`;
+      el.appendChild(d);
+    });
+  });
+}
+function setEch(id,s){
+  if(!ME)return alert('Identifiez-vous d\'abord.');
+  echSt[id]={s,by:ME.name,at:now()};
+  save('ech',echSt);
+  renderEch();renderDash();
+}
+
+// ========== CHECKLIST ==========
+function renderChk(){
+  document.getElementById('chk-ts').textContent='Mis à jour : '+fmt(now());
+  const el=document.getElementById('chk-list');el.innerHTML='';
+  CHK.forEach(cat=>{
+    const sh=document.createElement('div');sh.className='sec';sh.textContent=cat.cat;el.appendChild(sh);
+    cat.items.forEach(it=>{
+      const st=chkSt[it.id]||{};
+      const rv=st.recv;const vr=st.verif;
+      const d=document.createElement('div');d.className='chk-item';
+      d.innerHTML=`<div class="chk-body">
+          <div style="display:flex;align-items:flex-start;gap:6px;flex-wrap:wrap;margin-bottom:2px">
+            <span class="chk-name">${it.name}</span>
+            <span class="stat ${stClass(it.st)}">${it.st}</span>
+          </div>
+          <div class="chk-meta">${it.act}${it.resp&&it.resp!=='—'?' · <em>'+it.resp+'</em>':''}${it.note?' · '+it.note:''}</div>
+          ${rv?`<div class="chk-stamp">📥 Reçu par ${rv.by} · ${fmt(rv.at)}</div>`:''}
+          ${vr?`<div class="chk-stamp">✓ Vérifié par ${vr.by} · ${fmt(vr.at)}</div>`:''}
+        </div>
+        <div class="chk-ctrl">
+          <button class="cbtn${rv?' on':''}" onclick="togChk('${it.id}','recv')" title="Marquer reçu">📥${rv?' ✓':''}</button>
+          <button class="cbtn${vr?' on':''}" onclick="togChk('${it.id}','verif')" title="Marquer vérifié">✓${vr?'✓':''}</button>
+        </div>`;
+      el.appendChild(d);
+    });
+  });
+}
+function togChk(id,field){
+  if(!ME)return alert('Identifiez-vous d\'abord.');
+  if(!chkSt[id])chkSt[id]={};
+  if(chkSt[id][field])chkSt[id][field]=null;
+  else chkSt[id][field]={by:ME.name,at:now()};
+  save('chk',chkSt);renderChk();
+}
+
+// ========== DOCUMENTS ==========
+function renderDocs(){
+  const pend=docs.filter(x=>!x.recv);
+  const recv=docs.filter(x=>x.recv);
+  document.getElementById('sec-pend').textContent=`En attente (${pend.length})`;
+  document.getElementById('sec-recv').textContent=`Reçus (${recv.length})`;
+  const rp=document.getElementById('docs-pend');rp.innerHTML='';
+  if(!pend.length){rp.innerHTML='<p style="font-size:12px;color:var(--gray-300);padding:8px 0">Tous les documents ont été reçus.</p>';}
+  else pend.forEach(d=>{rp.appendChild(mkDoc(d));});
+  const rr=document.getElementById('docs-recv');rr.innerHTML='';
+  if(!recv.length){rr.innerHTML='<p style="font-size:12px;color:var(--gray-300);padding:8px 0">Aucun document reçu.</p>';}
+  else recv.forEach(d=>{rr.appendChild(mkDoc(d));});
+  renderDash();
+}
+function mkDoc(d){
+  const el=document.createElement('div');
+  el.className='doc-item'+(d.recv?' rcv':'');
+  el.innerHTML=`<button class="cbox${d.recv?' on':''}" onclick="togDoc('${d.id}')">${d.recv?'✓':''}</button>
+    <div style="flex:1;min-width:0">
+      <div class="doc-name">${d.name}</div>
+      ${d.recv?`<div class="doc-stamp">Reçu par ${d.recv.by} · ${fmt(d.recv.at)}</div>`:''}
+    </div>
+    <button class="xbtn" onclick="delDoc('${d.id}')">×</button>`;
+  return el;
+}
+function togDoc(id){
+  if(!ME)return alert('Identifiez-vous d\'abord.');
+  const d=docs.find(x=>x.id===id);if(!d)return;
+  d.recv=d.recv?null:{by:ME.name,at:now()};
+  save('docs',docs);renderDocs();
+}
+function delDoc(id){
+  docs=docs.filter(x=>x.id!==id);
+  save('docs',docs);renderDocs();
+}
+function addDoc(){
+  if(!ME)return alert('Identifiez-vous d\'abord.');
+  const inp=document.getElementById('new-doc');
+  const v=inp.value.trim();if(!v)return;
+  docs.push({id:'d'+Date.now(),name:v,recv:null});
+  inp.value='';save('docs',docs);renderDocs();
+}
+document.getElementById('new-doc').addEventListener('keydown',e=>{if(e.key==='Enter')addDoc();});
+
+// ========== MESSAGES ==========
+function renderMsgs(){
+  document.getElementById('msg-ts').textContent='Mis à jour : '+fmt(now());
+  const el=document.getElementById('msg-list');
+  if(!msgs.length){el.innerHTML='<div class="msg-empty">Aucun message. Commencez la conversation.</div>';return;}
+  el.innerHTML=msgs.map(m=>{
+    const mine=ME&&m.sender===ME.name;
+    return`<div class="bubble ${mine?'mine':'theirs'}">
+      <div class="meta">${m.sender} · ${fmt(m.at)}</div>
+      <div class="txt">${m.text.replace(/\n/g,'<br>')}</div>
+    </div>`;
+  }).join('');
+  el.scrollTop=el.scrollHeight;
+  document.getElementById('unread').style.display='none';
+}
+function loadMsgs(){msgs=load('msgs',[]);renderMsgs();}
+function sendMsg(){
+  if(!ME)return alert('Identifiez-vous d\'abord.');
+  const inp=document.getElementById('msg-input');
+  const v=inp.value.trim();if(!v)return;
+  msgs.push({id:Date.now(),sender:ME.name,text:v,at:now()});
+  inp.value='';save('msgs',msgs);renderMsgs();
+}
+
+// ========== TABS ==========
+function sw(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('p-'+id).classList.add('on');
+  btn.classList.add('on');
+  if(id==='msg'){document.getElementById('msg-list').scrollTop=99999;}
+}
+
+// ========== BOOT ==========
+const savedMe=load('me',null);
+if(savedMe){
+  ME=savedMe;
+  document.getElementById('me-name-hdr').textContent=ME.name;
+  document.getElementById('overlay').style.display='none';
+  init();
+}
+</script>
+</body>
+</html>
