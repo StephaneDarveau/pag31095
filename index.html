@@ -100,7 +100,7 @@ html,body{height:100%;font-family:var(--font);background:var(--off-white);color:
 .ech-ctrl{display:flex;flex-direction:column;gap:3px;flex-shrink:0}
 .sbtn{font-size:10px;padding:4px 9px;border-radius:20px;border:1px solid var(--gray-100);cursor:pointer;background:var(--white);color:var(--gray-500);white-space:nowrap;transition:all .12s;font-family:var(--font)}
 .sbtn:hover{background:var(--gray-50)}
-.sbtn.s-af{color:var(--gray-500);border-color:var(--gray-200)}
+.sbtn.s-af{color:var(--red);border-color:var(--red);background:var(--red-bg);font-weight:600}
 .sbtn.s-ec{background:var(--amber-bg);color:var(--amber);border-color:#fcd34d;font-weight:600}
 .sbtn.s-co{background:var(--green-bg);color:var(--green);border-color:#86efac;font-weight:600}
 
@@ -900,6 +900,15 @@ html,body{height:100%;font-family:var(--font);background:var(--off-white);color:
     <div class="refresh-row">
       <span id="chk-ts">—</span>
       <button class="rbtn" onclick="renderChk()">↻</button>
+    </div>
+    <div id="chk-filters" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--gray-100)">
+      <button class="jfbtn on" data-stfilter="tous" onclick="setChkFilter('tous')">Tous</button>
+      <button class="jfbtn" data-stfilter="À obtenir" onclick="setChkFilter('À obtenir')">À obtenir</button>
+      <button class="jfbtn" data-stfilter="À vérifier" onclick="setChkFilter('À vérifier')">À vérifier</button>
+      <button class="jfbtn" data-stfilter="À analyser" onclick="setChkFilter('À analyser')">À analyser</button>
+      <button class="jfbtn" data-stfilter="À calculer" onclick="setChkFilter('À calculer')">À calculer</button>
+      <button class="jfbtn" data-stfilter="À prévoir" onclick="setChkFilter('À prévoir')">À prévoir</button>
+      <button class="jfbtn" data-stfilter=" En main" onclick="setChkFilter(' En main')">✅ En main</button>
     </div>
     <div id="chk-list"></div>
   </div>
@@ -2135,11 +2144,17 @@ function renderChk(){
     cat.items.forEach(it=>{
       const st=chkSt[it.id]||{};
       const rv=st.recv;const vr=st.verif;
+      // Calcul du statut effectif basé sur les coches + statut manuel
+      let effectiveSt = st.manualSt || it.st;
+      if(vr) effectiveSt = ' En main';
+      else if(rv && effectiveSt==='À obtenir') effectiveSt = 'À vérifier';
+      // Filtre par statut
+      if(chkFilter!=='tous' && effectiveSt!==chkFilter) return;
       const d=document.createElement('div');d.className='chk-item';
       d.innerHTML=`<div class="chk-body">
           <div style="display:flex;align-items:flex-start;gap:6px;flex-wrap:wrap;margin-bottom:2px">
             <span class="chk-name">${it.name}</span>
-            <span class="stat ${stClass(it.st)}">${it.st}</span>
+            <span class="stat ${stClass(effectiveSt)}" style="cursor:pointer" title="Cliquer pour changer le statut" onclick="cycleChkSt('${it.id}')">${effectiveSt}</span>
           </div>
           <div class="chk-meta">${it.act}${it.resp&&it.resp!=='—'?' · <em>'+it.resp+'</em>':''}${it.note?' · '+it.note:''}</div>
           ${rv?`<div class="chk-stamp">📥 Reçu par ${rv.by} · ${fmt(rv.at)}</div>`:''}
@@ -2160,6 +2175,21 @@ function togChk(id,field){
   else chkSt[id][field]={by:ME.name,at:now()};
   save('chk',chkSt);renderChk();
 }
+function cycleChkSt(id){
+  if(!ME)return alert('Identifiez-vous d\'abord.');
+  const statuts=['À obtenir','À vérifier','À analyser','À calculer','À prévoir',' En main'];
+  if(!chkSt[id])chkSt[id]={};
+  const cur=chkSt[id].manualSt||'À obtenir';
+  const idx=statuts.indexOf(cur);
+  chkSt[id].manualSt=statuts[(idx+1)%statuts.length];
+  save('chk',chkSt);renderChk();
+}
+let chkFilter='tous';
+function setChkFilter(f){
+  chkFilter=f;
+  document.querySelectorAll('#chk-filters .jfbtn').forEach(b=>b.classList.toggle('on',b.dataset.stfilter===f));
+  renderChk();
+}
 
 // ========== DOCUMENTS ==========
 function renderDocs(){
@@ -2170,20 +2200,41 @@ function renderDocs(){
   const search = (document.getElementById('doc-search')||{}).value||'';
   let totalPend = 0, totalRecv = 0;
 
-  cats.forEach(cat=>{
+  cats.forEach((cat, catIdx)=>{
     let catDocs = docs.filter(d=>d.cat===cat.id).sort((a,b)=>(a.ord||0)-(b.ord||0));
     if(search) catDocs = catDocs.filter(d=>d.name.toLowerCase().includes(search.toLowerCase()));
     const pend = catDocs.filter(d=>!d.recv).length;
     const total = catDocs.length;
     totalPend += pend; totalRecv += (total - pend);
 
-    // Section header — même style que .sec
+    // Section header — draggable
     const hdr = document.createElement('div');
     hdr.className = 'doc-cat-hdr';
-    hdr.innerHTML = `<span class="doc-cat-label">${cat.label}</span>
+    hdr.draggable = true;
+    hdr.dataset.catId = cat.id;
+    hdr.innerHTML = `<span class="doc-cat-drag" title="Glisser pour réordonner" style="cursor:grab;font-size:14px;color:var(--gray-300);margin-right:4px;user-select:none">⠿</span><span class="doc-cat-label">${cat.label}</span>
       <span class="doc-cat-count">${total-pend}/${total}</span>
       <button class="doc-cat-add" onclick="addDocTocat('${cat.id}')" title="Ajouter">＋</button>
       <button class="doc-cat-del" onclick="deleteCategory('${cat.id}')" title="Supprimer catégorie">🗑</button>`;
+
+    hdr.addEventListener('dragstart', e=>{
+      dragCatId = cat.id;
+      hdr.style.opacity = '0.4';
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    hdr.addEventListener('dragend', e=>{ hdr.style.opacity=''; dragCatId=null; });
+    hdr.addEventListener('dragover', e=>{
+      e.preventDefault();
+      if(dragCatId && dragCatId !== cat.id) hdr.style.borderTop='2px solid var(--red)';
+    });
+    hdr.addEventListener('dragleave', e=>{ hdr.style.borderTop=''; });
+    hdr.addEventListener('drop', e=>{
+      e.preventDefault();
+      hdr.style.borderTop='';
+      if(!dragCatId || dragCatId===cat.id) return;
+      reorderCat(dragCatId, cat.id);
+    });
+
     container.appendChild(hdr);
 
     if(!catDocs.length){
@@ -2227,22 +2278,33 @@ function mkDoc(d){
   el.id = 'docitem-'+d.id;
   el.draggable = true;
   el.addEventListener('dragstart', e=>startDragDoc(e, d.id));
-  const hasFile = !!d.file;
-  const icon = hasFile ? fileIcon(d.file.name) : '📋';
+  // Rétrocompatibilité : si d.file existe (ancienne structure), le migrer
+  if(d.file && !d.files){ d.files = [{...d.file, label:'Version 1'}]; }
+  const files = d.files || [];
+  const hasFiles = files.length > 0;
+  const icon = hasFiles ? fileIcon(files[0].name) : '📋';
   const isAdmin = ME && ME.type === 's';
+
+  const filesHtml = files.map((f,i)=>`
+    <div class="doc-version" style="display:flex;align-items:center;gap:6px;margin-top:4px;padding:3px 6px;background:var(--gray-50);border-radius:4px;font-size:11px">
+      <span style="color:var(--gray-500)">${fileIcon(f.name)}</span>
+      <span style="flex:1;color:var(--gray-700)">${f.label||'Version '+(i+1)} — <em>${f.name}</em> · ${f.size||''}</span>
+      <button class="dbtn" style="padding:1px 7px" onclick="downloadVersion('${d.id}',${i})" title="Télécharger">⬇</button>
+      ${isAdmin?`<button class="dbtn" style="padding:1px 7px;color:var(--red)" onclick="removeVersion('${d.id}',${i})" title="Retirer">×</button>`:''}
+    </div>`).join('');
+
   el.innerHTML = `
     <span class="drag-handle" title="Réordonner">⠿</span>
     <span class="doc-icon">${icon}</span>
-    <div class="doc-body">
+    <div class="doc-body" style="flex:1">
       <div class="doc-name">${d.name}</div>
-      ${hasFile ? `<div class="doc-meta">📎 ${d.file.name} · ${d.file.size||''}</div>` : ''}
+      ${filesHtml}
       ${d.recv ? `<div class="doc-stamp">✓ Reçu par ${d.recv.by} · ${fmt(d.recv.at)}</div>` : ''}
     </div>
     <div class="doc-ctrl">
       <input type="file" id="fi-${d.id}" style="display:none" onchange="attachFile('${d.id}',this)">
       <button class="dbtn${d.recv?' d-recv':''}" onclick="togDoc('${d.id}')">${d.recv?'✓ Reçu':'À recevoir'}</button>
-      <button class="dbtn" onclick="document.getElementById('fi-${d.id}').click()">📎 ${hasFile?'Modif.':'Joindre'}</button>
-      ${hasFile?`<button class="dbtn" onclick="downloadAttachment('${d.id}')">⬇ Télécharger</button>`:''}
+      <button class="dbtn" onclick="document.getElementById('fi-${d.id}').click()">📎 ${hasFiles?'+ Version':'Joindre'}</button>
       ${isAdmin?`<button class="dbtn" onclick="delDoc('${d.id}')" style="color:var(--red)">× Retirer</button>`:''}
     </div>`;
   return el;
@@ -2275,6 +2337,23 @@ function showAddCatPrompt(){
 }
 
 let dragDocId = null;
+let dragCatId = null;
+function reorderCat(fromId, toId){
+  const cats = getDocCats();
+  const fromIdx = cats.findIndex(c=>c.id===fromId);
+  const toIdx   = cats.findIndex(c=>c.id===toId);
+  if(fromIdx<0||toIdx<0) return;
+  const [moved] = cats.splice(fromIdx,1);
+  cats.splice(toIdx,0,moved);
+  // Renuméroter les labels : remplacer le préfixe NN – par la nouvelle position
+  cats.forEach((c,i)=>{
+    c.label = c.label.replace(/^\d+\s*[–-]\s*/,'');
+    c.label = String(i+1).padStart(2,'0')+' – '+c.label;
+  });
+  docCats = cats;
+  save('docCats', docCats);
+  renderDocs();
+}
 function startDragDoc(e, id){ dragDocId=id; e.dataTransfer.effectAllowed='move'; }
 function dropDoc(e, catId){
   if(!dragDocId) return;
@@ -2359,24 +2438,37 @@ function fileIcon(name){
 async function attachFile(docId, input){
   if(!ME){alert("Identifiez-vous d'abord."); return;}
   const file = input.files[0]; if(!file) return;
+  const label = prompt("Description de cette version :\n(ex: 1ère signature, Signatures des deux côtés, Accusé réception)",'Version '+(((docs.find(x=>x.id===docId)||{}).files||[]).length+1));
+  if(label===null){input.value='';return;} // annulé
   try{
     const data = await readFileAsDataURL(file);
     const d = docs.find(x=>x.id===docId); if(!d) return;
-    d.file = {name:file.name, size:fmtSize(file.size), type:file.type, data, by:ME.name, at:now()};
+    // Migration rétrocompatible
+    if(d.file && !d.files){ d.files=[{...d.file, label:'Version 1'}]; delete d.file; }
+    if(!d.files) d.files=[];
+    d.files.push({name:file.name, size:fmtSize(file.size), type:file.type, data, label:label.trim()||'Version '+(d.files.length+1), by:ME.name, at:now()});
     if(!d.recv) d.recv = {by:ME.name, at:now()};
     save('docs',docs);
-    addLog('doc', `Fichier « ${file.name} » joint au document « ${d.name} »`);
+    addLog('doc', `Fichier « ${file.name} » (${label}) joint à « ${d.name} »`);
     trackAction(`Fichier « ${file.name} » joint à « ${d.name} »`);
     renderDocs();
   } catch(e){alert('Erreur : '+e.message);}
   input.value='';
 }
-async function downloadAttachment(docId){
-  const d = docs.find(x=>x.id===docId);
-  if(!d||!d.file) return;
+async function downloadVersion(docId, idx){
+  const d = docs.find(x=>x.id===docId); if(!d) return;
+  const f = (d.files||[])[idx]; if(!f) return;
   const a = document.createElement('a');
-  a.href = d.file.data; a.download = d.file.name;
+  a.href = f.data; a.download = f.name;
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+function removeVersion(docId, idx){
+  if(!ME||ME.type!=='s') return alert('Seul le courtier peut retirer un fichier.');
+  if(!confirm('Retirer cette version ?')) return;
+  const d = docs.find(x=>x.id===docId); if(!d||!d.files) return;
+  d.files.splice(idx,1);
+  if(!d.files.length) delete d.files;
+  save('docs',docs); renderDocs();
 }
 function removeAttachment(docId){
   if(!ME||ME.type!=='s') return alert('Seul le courtier peut retirer un fichier.');
